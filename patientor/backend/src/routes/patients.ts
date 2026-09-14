@@ -1,6 +1,9 @@
 import express from 'express';
 import patientsService from '../services/patientsService.ts';
 import { toNewPatient } from '../utils.ts';
+import { z } from 'zod';
+import { NewEntrySchema } from '../types.ts';
+
 
 const router = express.Router();
 
@@ -28,6 +31,20 @@ router.post('/', (req, res) => {
       errorMessage += ' Error: ' + error.message;
     }
     res.status(400).send(errorMessage);
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const newEntry = NewEntrySchema.parse(req.body);
+    const addedEntry = patientsService.addEntry(req.params.id, newEntry);
+    res.json(addedEntry);
+  } catch (error: unknown) {
+    if (error instanceof z.ZodError) {
+      res.status(400).send({ error: error.issues });
+    } else {
+      res.status(400).send({ error: 'unknown error' });
+    }
   }
 });
 

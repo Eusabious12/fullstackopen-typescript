@@ -1,4 +1,5 @@
 import type { CoursePart } from '../types';
+
 interface TotalProps {
   courseParts: CoursePart[];
 }
